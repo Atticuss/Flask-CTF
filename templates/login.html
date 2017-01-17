@@ -1,0 +1,12 @@
+<html><body>
+    <form action="/login" method="Post">
+        Username:
+        <input type="text" name="username"> </br>
+        Password:
+        <input type="password" name="password"> </br>
+        <input type="submit">
+    </form>
+    {% if error is not none %}
+        {{error}}
+    {% endif %}
+</body></html>

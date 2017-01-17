@@ -1,0 +1,19 @@
+<html><body>
+    <table id="leaderboard-table">
+        <thead>
+            <tr>
+                <td>Payload</td>
+                <td>Valid?</td>
+                <td>Student</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in leaderboard_data %}
+            <tr>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
