@@ -77,7 +77,6 @@ def login_page():
 def account_page():
     session_id = request.cookies.get('nVisBankingSession')
     user = AuthController.validate_session_id(session_id)
-    print('user - %s' % user)
 
     if user is None:
         resp = make_response(redirect('/login'))
@@ -93,7 +92,6 @@ def account_page():
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard_page(filt=None):
     leaderboard_data = LeaderboardController.get_all_leaderboard_data()
-    print(leaderboard_data)
     return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
 
 @app.route('/leaderboard_login', methods=['GET', 'POST'])
