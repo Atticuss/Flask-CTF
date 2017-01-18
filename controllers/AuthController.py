@@ -46,8 +46,6 @@ def authenticate(form_data, student):
 
 def validate_session_id(session_id):
     with admin_conn.cursor() as curs:
-        #session_id = session_id.split('nVisBankingSession=')[1].strip('"')
-        print(session_id)
         curs.execute('select username, creation_time from user_sessions where session_id=%s', (session_id))
         res = curs.fetchall()
 
