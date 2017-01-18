@@ -92,7 +92,27 @@ def account_page():
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard_page(filt=None):
     leaderboard_data = LeaderboardController.get_all_leaderboard_data()
-    return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
+
+    unique_user_payloads = {}
+    unique_pw_payloads = {}
+    for row in leaderboard_data:
+        try:
+            t = unique_user_payloads[row[1]]
+            c = t[0] + 1
+            unique_user_payloads[row[1]] = (c, t[1])
+        except KeyError:
+            t = (1, row[4])
+            unique_user_payloads[row[1]] = t
+
+        try:
+            t = unique_pw_payloads[row[2]]
+            c = t[0] + 1
+            unique_pw_payloads[row[2]] = (c, t[1])
+        except KeyError:
+            t = (1, row[4])
+            unique_pw_payloads[row[2]] = t
+
+    return render_template('leaderboard.html', leaderboard_data=leaderboard_data, unique_user_payloads=unique_user_payloads, unique_pw_payloads=unique_pw_payloads)
 
 @app.route('/leaderboard_login', methods=['GET', 'POST'])
 def leadboard_login_page():
