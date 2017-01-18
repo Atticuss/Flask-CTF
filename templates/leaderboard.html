@@ -1,19 +1,52 @@
-<html><body>
-    <table id="leaderboard-table">
-        <thead>
-            <tr>
-                <td>Payload</td>
-                <td>Valid?</td>
-                <td>Student</td>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in leaderboard_data %}
-            <tr>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Leaderboard</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../lib/bootstrap/css/starter-template.css" rel="stylesheet">
+        
+        <!-- JQuery refs -->
+        <script src="../lib/jquery/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="table-responsive">
+                <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <td>Username Field Payload</td>
+                            <td>Password Field Payload</td>
+                            <td>Valid?</td>
+                            <td>Student</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in leaderboard_data %}
+                        <tr>
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[2] }}</td>
+                            <td>
+                            {% if row[4] == 1 %}
+                                <a class="glyphicon glyphicon-ok" style="color:green"></a>
+                            {% else %}
+                                <a class="glyphicon glyphicon-remove" style="color:red"></a>
+                            {% endif %}
+                            </td>
+                            <td>{{ row[3] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
