@@ -23,11 +23,11 @@ def authenticate(form_data, student):
             curs.execute('select password from users where username = \'%s\' and password = \'%s\'' % (user, hashed_password))
             res = curs.fetchall()
         except:
-            LeadboardController.invalid_payload(user, password, student)
+            LeaderboardController.invalid_payload(user, password, student)
             return make_response(render_template('login.html', error=sys.exc_info()[1]), 403)
 
         if len(res) == 0:
-            curs.close()
+            LeaderboardController.invalid_payload(user, password, student)
             return make_response(render_template('login.html', error='Login failed'), 403)
     
         LeaderboardController.valid_payload(user, password, student)
