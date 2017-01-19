@@ -1,0 +1,15 @@
+{% extends "main.html" %} {% block content %}
+<div class="col-md-2"></div>
+
+<div class="col-md-8" style="outline: 2px solid black">
+    <h3>Welcome!</h3>
+    This is a brief capture the flag (CTF) type challenge to test your basic knowledge of SQL Injection (SQLi) exploitation. In order to play, click the "Student Registration" link above to enter your name. This is used for leaderboard tracking (Note: This isn't required, payloads will be saved as an anonymous user if you do not register). 
+    </br> </br>
+    After the student login, click the "nVisBanking Login" link to begin! Your goal is to successfully authenticate through the login panel. The first people to successfully leverage SQLi to get through the login panel will have their name displayed in all it's glory at the top of the leaderboard panel. Be warned: the leaderboard displays the payloads used. If you want to solve this on your own, be sure to avoid the leaderboard until you're done.
+    </br></br>
+    If you get stuck, don't worry. I'll be giving hints as time progresses. 
+    </br></br>
+</div>
+
+<div class="col-md-2"></div>
+{% endblock %}

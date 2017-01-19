@@ -1,7 +1,14 @@
-<html><body>
-    <form action="/leaderboard_login" method="Post">
-        Name:
-        <input type="text" name="student_name"> </br>
-        <input type="submit">
-    </form>
-</body></html>
+{% extends "main.html" %} {% block content %}
+<div class="col-md-2"></div>
+
+<div class="col-md-8" style="outline: 2px solid black">
+    <h3>Student Login</h3> </br>
+    <form action="/student_registration" method="POST">
+        <b>Name:</b>
+        <input type="text" name="student_name"> </br> </br>
+        <input type="submit" value="Register!"> </br></br>
+    </form> 
+</div>
+
+<div class="col-md-2"></div>
+{% endblock %}

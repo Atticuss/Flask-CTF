@@ -1,140 +1,117 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "main.html" %} {% block content %}
 
-        <title>Leaderboard</title>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#all-payloads">All Payloads</a></li>
+    <li><a data-toggle="tab" href="#valid-payloads">Valid Payloads</a></li>
+    <li><a data-toggle="tab" href="#unique-user-payloads">Unique Username Field Payloads</a></li>
+    <li><a data-toggle="tab" href="#unique-pw-payloads">Unique Password Field Payloads</a></li>
+</ul>
 
-        <!-- Bootstrap core CSS -->
-        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+<div class="tab-content">
+    <div id="all-payloads" class="tab-pane fade in active">
+        <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr align="center">
+                    <td><b>Username Field Payload</b></td>
+                    <td><b>Password Field Payload</b></td>
+                    <td><b>Valid?</b></td>
+                    <td><b>Student</b></td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in leaderboard_data %}
+                <tr align="center">
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>
+                    {% if row[4] == 1 %}
+                        <a class="glyphicon glyphicon-ok" style="color:green"></a>
+                    {% else %}
+                        <a class="glyphicon glyphicon-remove" style="color:red"></a>
+                    {% endif %}
+                    </td>
+                    <td>{{ row[3] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Custom styles for this template -->
-        <link href="/lib/bootstrap/css/starter-template.css" rel="stylesheet">
+    <div id="valid-payloads" class="tab-pane fade">
+        <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr align="center">
+                    <td><b>Username Field Payload</b></td>
+                    <td><b>Password Field Payload</b></td>
+                    <td><b>Student</b></td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in leaderboard_data %}
+                {% if row[4] == 1 %}
+                    <tr align="center">
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <!-- JQuery refs -->
-        <script src="/lib/jquery/jquery.min.js" type="text/javascript"></script>
+    <div id="unique-user-payloads" class="tab-pane fade">
+        <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr align="center">
+                    <td><b>Payload</b></td>
+                    <td><b>Count</b></td>
+                    <td><b>Valid?</b></td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k,v in unique_user_payloads.items() %}
+                <tr align="center">
+                    <td>{{ k }}</td>
+                    <td>{{ v[0] }}</td>
+                    <td>
+                    {% if v[1] == 1 %}
+                        <a class="glyphicon glyphicon-ok" style="color:green"></a>
+                    {% else %}
+                        <a class="glyphicon glyphicon-remove" style="color:red"></a>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Bootstrap core JS -->
-        <script src="/lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    </head>
-
-    <body>
-<div class="container">
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#all-payloads">All Payloads</a></li>
-                <li><a data-toggle="tab" href="#valid-payloads">Valid Payloads</a></li>
-                <li><a data-toggle="tab" href="#unique-user-payloads">Unique Username Field Payloads</a></li>
-                <li><a data-toggle="tab" href="#unique-pw-payloads">Unique Password Field Payloads</a></li>
-            </ul>
-
-            <div class="tab-content">
-                <div id="all-payloads" class="tab-pane fade in active">
-                    <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
-                        <thead>
-                            <tr align="center">
-                                <td><b>Username Field Payload</b></td>
-                                <td><b>Password Field Payload</b></td>
-                                <td><b>Valid?</b></td>
-                                <td><b>Student</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for row in leaderboard_data %}
-                            <tr align="center">
-                                <td>{{ row[1] }}</td>
-                                <td>{{ row[2] }}</td>
-                                <td>
-                                {% if row[4] == 1 %}
-                                    <a class="glyphicon glyphicon-ok" style="color:green"></a>
-                                {% else %}
-                                    <a class="glyphicon glyphicon-remove" style="color:red"></a>
-                                {% endif %}
-                                </td>
-                                <td>{{ row[3] }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="valid-payloads" class="tab-pane fade">
-                    <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
-                        <thead>
-                            <tr align="center">
-                                <td><b>Username Field Payload</b></td>
-                                <td><b>Password Field Payload</b></td>
-                                <td><b>Student</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for row in leaderboard_data %}
-                            {% if row[4] == 1 %}
-                                <tr align="center">
-                                    <td>{{ row[1] }}</td>
-                                    <td>{{ row[2] }}</td>
-                                    <td>{{ row[3] }}</td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="unique-user-payloads" class="tab-pane fade">
-                    <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
-                        <thead>
-                            <tr align="center">
-                                <td><b>Payload</b></td>
-                                <td><b>Count</b></td>
-                                <td><b>Valid?</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for k,v in unique_user_payloads.items() %}
-                            <tr align="center">
-                                <td>{{ k }}</td>
-                                <td>{{ v[0] }}</td>
-                                <td>
-                                {% if v[1] == 1 %}
-                                    <a class="glyphicon glyphicon-ok" style="color:green"></a>
-                                {% else %}
-                                    <a class="glyphicon glyphicon-remove" style="color:red"></a>
-                                {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="unique-pw-payloads" class="tab-pane fade">
-                    <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
-                        <thead>
-                            <tr align="center">
-                                <td><b>Payload</b></td>
-                                <td><b>Count</b></td>
-                                <td><b>Valid?</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for k,v in unique_pw_payloads.items() %}
-                            <tr align="center">
-                                <td>{{ k }}</td>
-                                <td>{{ v[0] }}</td>
-                                <td>
-                                {% if v[1] == 1 %}
-                                    <a class="glyphicon glyphicon-ok" style="color:green"></a>
-                                {% else %}
-                                    <a class="glyphicon glyphicon-remove" style="color:red"></a>
-                                {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </div>
+    <div id="unique-pw-payloads" class="tab-pane fade">
+        <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr align="center">
+                    <td><b>Payload</b></td>
+                    <td><b>Count</b></td>
+                    <td><b>Valid?</b></td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k,v in unique_pw_payloads.items() %}
+                <tr align="center">
+                    <td>{{ k }}</td>
+                    <td>{{ v[0] }}</td>
+                    <td>
+                    {% if v[1] == 1 %}
+                        <a class="glyphicon glyphicon-ok" style="color:green"></a>
+                    {% else %}
+                        <a class="glyphicon glyphicon-remove" style="color:red"></a>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

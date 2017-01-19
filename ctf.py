@@ -65,6 +65,10 @@ except ImportError:
 #---- Dynamic Python outes ----#    
 
 @app.route('/', methods=['GET'])
+def welcome_page():
+    student = request.cookies.get('student_name', 'anonymous')
+    return render_template('welcome.html', student=student)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     student = request.cookies.get('student_name')
@@ -75,6 +79,7 @@ def login_page():
 
 @app.route('/account', methods=['GET'])
 def account_page():
+    student = request.cookies.get('student_name', 'anonymous')
     session_id = request.cookies.get('nVisBankingSession')
     user = AuthController.validate_session_id(session_id)
 
@@ -87,10 +92,11 @@ def account_page():
         return resp
 
     account_data = AccountController.get_account_data(user)
-    return render_template('account.html', account_data=account_data)
+    return render_template('account.html', student=student, account_data=account_data)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard_page(filt=None):
+    student = request.cookies.get('student_name', 'anonymous')
     leaderboard_data = LeaderboardController.get_all_leaderboard_data()
 
     unique_user_payloads = {}
@@ -112,17 +118,18 @@ def leaderboard_page(filt=None):
             t = (1, row[4])
             unique_pw_payloads[row[2]] = t
 
-    return render_template('leaderboard.html', leaderboard_data=leaderboard_data, unique_user_payloads=unique_user_payloads, unique_pw_payloads=unique_pw_payloads)
+    return render_template('leaderboard.html', student=student, leaderboard_data=leaderboard_data, unique_user_payloads=unique_user_payloads, unique_pw_payloads=unique_pw_payloads)
 
-@app.route('/leaderboard_login', methods=['GET', 'POST'])
+@app.route('/student_registration', methods=['GET', 'POST'])
 def leadboard_login_page():
+    student = request.cookies.get('student_name', 'anonymous')
     if request.method == 'GET':
-        return render_template('leaderboard_login.html')
+        return render_template('leaderboard_login.html', student=student)
     else:
         try:
             student = request.form['student_name']
         except KeyError:
-            return make_response(render_template('leaderboard_login.html', error='Bad request'), 400)
+            return make_response(render_template('leaderboard_login.html', student=student, error='Bad request'), 400)
 
         resp = make_response(redirect('/login'))
         resp.set_cookie('student_name', student)

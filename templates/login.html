@@ -1,12 +1,19 @@
-<html><body>
-    <form action="/login" method="Post">
-        Username:
+{% extends "main.html" %} {% block content %}
+<div class="col-md-2"></div>
+
+<div class="col-md-8" style="outline: 2px solid black">
+    <h3>nVisBanking Login</h3> </br>
+    <form action="/login" method="POST">
+        <b>Username:</b>
         <input type="text" name="username"> </br>
-        Password:
-        <input type="password" name="password"> </br>
-        <input type="submit">
+        <b>Password:</b>
+        <input type="password" name="password"> </br> </br>
+        <input type="submit" value="Login!"> </br></br>
     </form>
     {% if error is not none %}
         {{error}}
     {% endif %}
-</body></html>
+</div>
+
+<div class="col-md-2"></div>
+{% endblock %}
