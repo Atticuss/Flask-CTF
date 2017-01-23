@@ -4,8 +4,8 @@
 <div class="col-md-8">
     Logged in as: {{ user }} </br>
     <div style="outline: 2px solid black">
-        <h3>Account Balance</h3>
-        you broke, sucka.
+        <h3>Welcome {{ account_data[0] }} {{ account_data[1] }}</h3>
+        Current balance: ${{ '{:,}'.format(account_data[2]) }}
         </br></br>
     </div>
 </div>
