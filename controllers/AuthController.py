@@ -9,28 +9,29 @@ def authenticate(form_data, student):
         student = 'anonymous'
 
     try:
-        user = form_data['username']
-        password = form_data['password']
+        user_payload = form_data['username']
+        pw_payload = form_data['password']
     except KeyError:
         return make_response(render_template('login.html', error='Invalid request'), 400)
 
     m = hashlib.sha1()
-    m.update(password.encode())
+    m.update(pw_payload.encode())
     hashed_password = base64.b64encode(m.digest()).decode()
 
     with admin_conn.cursor() as curs:
         try:
-            curs.execute('select password from users where username = \'%s\' and password = \'%s\'' % (user, hashed_password))
+            curs.execute('select username, password from users where username = \'%s\' and password = \'%s\'' % (user_payload, hashed_password))
             res = curs.fetchall()
         except:
-            LeaderboardController.invalid_payload(user, password, student)
+            LeaderboardController.invalid_payload(user_payload, pw_payload, student)
             return make_response(render_template('login.html', error=sys.exc_info()[1]), 403)
 
         if len(res) == 0:
-            LeaderboardController.invalid_payload(user, password, student)
+            LeaderboardController.invalid_payload(user_payload, pw_payload, student)
             return make_response(render_template('login.html', error='Login failed'), 403)
     
-        LeaderboardController.valid_payload(user, password, student)
+        user = res[0][0]
+        LeaderboardController.valid_payload(user_payload, pw_payload, student)
 
         curs.execute('delete from user_sessions where username=%s', (user))
         admin_conn.commit()

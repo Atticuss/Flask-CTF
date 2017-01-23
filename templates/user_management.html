@@ -1,0 +1,25 @@
+{% extends "main.html" %} {% block content %}
+<div class="col-md-2"></div>
+
+<div class="col-md-8">
+    Logged in as: {{ user }} </br> </br>
+    <table id="leaderboard-table" class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <td><b>User<b></td>
+                <td><b>Account Balance<b></td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in user_list %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>${{ '{:,}'.format(user[1]) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="col-md-2"></div>
+{% endblock %}

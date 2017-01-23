@@ -90,9 +90,12 @@ def account_page():
         resp.set_cookie('nVisBankingSession', '', expires=expire_date)
 
         return resp
-
-    account_data = AccountController.get_account_data(user)
-    return render_template('account.html', student=student, account_data=account_data)
+    elif user == 'admin':
+        user_list = AccountController.get_all_users()
+        return render_template('user_management.html', student=student, user_list=user_list, user=user)
+    else:
+        account_data = AccountController.get_account_data(user)
+        return render_template('account.html', student=student, account_data=account_data, user=user)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard_page(filt=None):
