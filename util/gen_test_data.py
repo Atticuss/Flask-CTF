@@ -13,10 +13,16 @@ with open('last_names.txt', 'r') as f:
 
 with open('users.txt', 'w') as f:
     charset = string.ascii_letters + string.digits
+    unames = []
     for i in range(100):
-        fname = fnames[randrange(len(fnames))]
-        lname = lnames[randrange(len(lnames))]
-        uname = ('%s_%s' % (fname[0], lname)).lower()
+        while True:
+            fname = fnames[randrange(len(fnames))]
+            lname = lnames[randrange(len(lnames))]
+            uname = ('%s_%s' % (fname[0], lname)).lower()
+
+            if uname not in unames:
+                unames.append(uname)
+                break
 
         pw = ''
         for i in range(15):
