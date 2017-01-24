@@ -1,7 +1,8 @@
 import hashlib, os, base64, sys
 from datetime import datetime
 from flask import make_response, redirect, render_template
-from util.db import admin_conn, readonly_conn
+from util.db import (establish_admin_conn,
+                    establish_readonly_conn)
 from controllers import LeaderboardController
 
 def authenticate(form_data, student):
@@ -18,49 +19,52 @@ def authenticate(form_data, student):
     m.update(pw_payload.encode())
     hashed_password = base64.b64encode(m.digest()).decode()
 
-    with readonly_conn.cursor() as curs:
-        try:
-            curs.executemany('select username, password from users where username = \'%s\' and password = \'%s\'' % (user_payload, hashed_password))   
-            res = curs.fetchall()
-        except:
-            LeaderboardController.invalid_payload(user_payload, pw_payload, student)
-            return make_response(render_template('login.html', error=sys.exc_info()[1]), 403)
+    with establish_readonly_conn() as readonly_conn:
+        with readonly_conn.cursor() as curs:
+            try:
+                curs.execute('select username, password from users where username = \'%s\' and password = \'%s\'' % (user_payload, hashed_password))   
+                res = curs.fetchall()
+            except:
+                LeaderboardController.invalid_payload(user_payload, pw_payload, student)
+                return make_response(render_template('login.html', error=sys.exc_info()[1]), 403)
 
-        if len(res) == 0:
-            LeaderboardController.invalid_payload(user_payload, pw_payload, student)
-            return make_response(render_template('login.html', error='Login failed'), 403)
-    
-        user = res[0][0]
-        LeaderboardController.valid_payload(user_payload, pw_payload, student)
+            if len(res) == 0:
+                LeaderboardController.invalid_payload(user_payload, pw_payload, student)
+                return make_response(render_template('login.html', error='Login failed'), 403)
+        
+            user = res[0][0]
+            LeaderboardController.valid_payload(user_payload, pw_payload, student)
 
-    with admin_conn.cursor() as curs:
-        curs.execute('delete from user_sessions where username=%s', (user))
-        admin_conn.commit()
+    with establish_admin_conn() as admin_conn:
+        with admin_conn.cursor() as curs:
+            curs.execute('delete from user_sessions where username=%s', (user))
+            admin_conn.commit()
 
-        session_id = base64.b64encode(os.urandom(100))
-        creation_time = datetime.strftime(datetime.now(), '%Y-%d-%m %H:%M:%S.%f')
-        curs.execute('insert into user_sessions (session_id, username, creation_time) values (%s, %s, %s)', (session_id, user, creation_time))
-        admin_conn.commit()
+            session_id = base64.b64encode(os.urandom(100))
+            creation_time = datetime.strftime(datetime.now(), '%Y-%d-%m %H:%M:%S.%f')
+            curs.execute('insert into user_sessions (session_id, username, creation_time) values (%s, %s, %s)', (session_id, user, creation_time))
+            admin_conn.commit()
 
-        resp = make_response(redirect('/account'))
-        resp.set_cookie('nVisBankingSession', session_id)
-        return resp
+            resp = make_response(redirect('/account'))
+            resp.set_cookie('nVisBankingSession', session_id)
+            return resp
 
 def validate_session_id(session_id):
-    with admin_conn.cursor() as curs:
-        curs.execute('select username, creation_time from user_sessions where session_id=%s', (session_id))
-        res = curs.fetchall()
+    with establish_admin_conn() as admin_conn:
+        with admin_conn.cursor() as curs:
+            curs.execute('select username, creation_time from user_sessions where session_id=%s', (session_id))
+            res = curs.fetchall()
 
-        if len(res) > 0:
-            session_creation_time = datetime.strptime(res[0][1], '%Y-%d-%m %H:%M:%S.%f')
-            delta = datetime.now() - session_creation_time
+            if len(res) > 0:
+                session_creation_time = datetime.strptime(res[0][1], '%Y-%d-%m %H:%M:%S.%f')
+                delta = datetime.now() - session_creation_time
 
-            if delta.seconds > 3600:
-                curs.execute('delete from user_sessions where session_id=%s', session_id)
-                admin_conn.commit()
+                if delta.seconds > 3600:
+                    curs.execute('delete from user_sessions where session_id=%s', session_id)
+                    admin_conn.commit()
 
-                return None
+                    return None
+                else:
+                    return res[0][0]
             else:
-                return res[0][0]
-        else:
-            return None
+                return None

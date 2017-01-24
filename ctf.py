@@ -7,8 +7,7 @@ from flask import (Flask,
                     render_template,
                     redirect)
 
-from util.db import (establish_admin_conn,
-                    establish_readonly_conn)
+from util.db import set_app
 
 def load_config_file(app):
     with open('ctf.conf', 'r') as f:
@@ -19,8 +18,7 @@ def load_config_file(app):
 
 app = Flask(__name__)
 load_config_file(app)
-establish_admin_conn(app)
-establish_readonly_conn(app)
+set_app(app)
 
 from controllers import (AuthController,
                         AccountController,
