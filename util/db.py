@@ -15,10 +15,32 @@ def establish_admin_conn(app):
 
     admin_conn = pymssql.connect(server=server, port=server_port, user=user, password=password, database=db)
 
+def establish_readonly_conn(app):
+    global admin_conn, readonly_conn
+
+    server = app.config['DB_Server']
+    server_port = app.config['DB_Port']
+    user = app.config['readonly_db_user']
+    password = app.config['readonly_db_pw']
+    db = app.config['Database']
+
+    try:
+        readonly_conn = pymssql.connect(server=server, port=server_port, user=user, password=password, database=db)
+    except pymssql.OperationalError:
+        #readonly account hasn't been created yet
+        with admin_conn.cursor() as curs:
+            curs.execute('create login %s with password = \'%s\'' % (user, password))
+            curs.execute('create user %s for login %s' % (user, user))
+            curs.execute('grant select on users to %s' % (user))
+            curs.execute('grant select on user_sessions to %s' % (user))
+            curs.execute('grant select on leaderboard to %s' % (user))
+
+        admin_conn.commit()
+        readonly_conn = pymssql.connect(server=server, port=server_port, user=user, password=password, database=db)
+
 def build_schema():
     drop_table('users')
     drop_table('user_sessions')
-    drop_table('account_info')
     drop_table('leaderboard')
 
     with admin_conn.cursor() as curs:

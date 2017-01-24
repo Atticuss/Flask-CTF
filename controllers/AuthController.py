@@ -1,7 +1,7 @@
 import hashlib, os, base64, sys
 from datetime import datetime
 from flask import make_response, redirect, render_template
-from util.db import admin_conn
+from util.db import admin_conn, readonly_conn
 from controllers import LeaderboardController
 
 def authenticate(form_data, student):
@@ -18,9 +18,9 @@ def authenticate(form_data, student):
     m.update(pw_payload.encode())
     hashed_password = base64.b64encode(m.digest()).decode()
 
-    with admin_conn.cursor() as curs:
+    with readonly_conn.cursor() as curs:
         try:
-            curs.execute('select username, password from users where username = \'%s\' and password = \'%s\'' % (user_payload, hashed_password))
+            curs.executemany('select username, password from users where username = \'%s\' and password = \'%s\'' % (user_payload, hashed_password))   
             res = curs.fetchall()
         except:
             LeaderboardController.invalid_payload(user_payload, pw_payload, student)
@@ -33,6 +33,7 @@ def authenticate(form_data, student):
         user = res[0][0]
         LeaderboardController.valid_payload(user_payload, pw_payload, student)
 
+    with admin_conn.cursor() as curs:
         curs.execute('delete from user_sessions where username=%s', (user))
         admin_conn.commit()
 

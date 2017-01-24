@@ -7,7 +7,8 @@ from flask import (Flask,
                     render_template,
                     redirect)
 
-from util.db import establish_admin_conn
+from util.db import (establish_admin_conn,
+                    establish_readonly_conn)
 
 def load_config_file(app):
     with open('ctf.conf', 'r') as f:
@@ -19,6 +20,7 @@ def load_config_file(app):
 app = Flask(__name__)
 load_config_file(app)
 establish_admin_conn(app)
+establish_readonly_conn(app)
 
 from controllers import (AuthController,
                         AccountController,
@@ -43,24 +45,24 @@ try:
         with app.app_context():
             remove_invalid_sessions()
 except ImportError:
-    print('[!] Not running inside uwsgi. Background jobs will not run and static files will be served via Flask')
+    print('[!] Not running inside uwsgi. Background jobs will not run.')
 
-    #---- Static File Routes ----#
-    @app.route('/lib/bootstrap/css/<path:path>')
-    def sendBootstrapCSS(path):
-        return send_from_directory('lib/bootstrap/css', path)
+#---- Static File Routes ----#
+@app.route('/lib/bootstrap/css/<path:path>')
+def sendBootstrapCSS(path):
+    return send_from_directory('lib/bootstrap/css', path)
 
-    @app.route('/lib/bootstrap/fonts/<path:path>')
-    def sendBootstrapFonts(path):
-        return send_from_directory('lib/bootstrap/fonts', path)
+@app.route('/lib/bootstrap/fonts/<path:path>')
+def sendBootstrapFonts(path):
+    return send_from_directory('lib/bootstrap/fonts', path)
 
-    @app.route('/lib/bootstrap/js/<path:path>')
-    def sendBootstrap(path):
-        return send_from_directory('lib/bootstrap/js', path)
+@app.route('/lib/bootstrap/js/<path:path>')
+def sendBootstrap(path):
+    return send_from_directory('lib/bootstrap/js', path)
 
-    @app.route('/lib/jquery/<path:path>')
-    def sendJQuery(path):
-        return send_from_directory('lib/jquery', path)
+@app.route('/lib/jquery/<path:path>')
+def sendJQuery(path):
+    return send_from_directory('lib/jquery', path)
 
 #---- Dynamic Python outes ----#    
 
