@@ -25,7 +25,6 @@ from controllers import (AuthController,
                         LeaderboardController)
 
 import sys
-import bcrypt
 import datetime
 
 # ---
