@@ -17,3 +17,9 @@ def invalid_payload(user, password, student):
         with admin_conn.cursor() as curs:
             curs.execute('insert into leaderboard (user_payload, password_payload, student, valid) values (%s, %s, %s, %s)', (user, password, student, 0))
             admin_conn.commit()
+
+def register_student_email(email):
+    with establish_admin_conn() as admin_conn:
+        with admin_conn.cursor() as curs:
+            curs.execute('insert into students (email) values (%s)', (email))
+            admin_conn.commit()

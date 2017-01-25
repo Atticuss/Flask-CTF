@@ -70,7 +70,7 @@ def welcome_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    student = request.cookies.get('student_name')
+    student = request.cookies.get('student_name', 'anonymous')
     if  request.method == 'GET':
         return render_template('login.html', student=student)
     else:
@@ -130,8 +130,12 @@ def leadboard_login_page():
     else:
         try:
             student = request.form['student_name']
+            email = request.form.get('email', '')
         except KeyError:
             return make_response(render_template('leaderboard_login.html', student=student, error='Bad request'), 400)
+
+        if len(email) > 1:
+            LeaderboardController.register_student_email(email)
 
         resp = make_response(redirect('/login'))
         resp.set_cookie('student_name', student)
@@ -143,10 +147,11 @@ if __name__ == '__main__':
     with app.app_context():
         if len(sys.argv) > 1:
             if sys.argv[1] == '--build-db':
-                from util.db import build_schema, populate_db
+                from util.db import build_schema, populate_db, create_readonly_user
 
                 build_schema()
                 populate_db()
+                create_readonly_user()
                 
                 print('db rebuilt and populated')
         else:
